@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-*: initial;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f6f8f9;
+  --color-neutral-100: #eef1f3;
+  --color-neutral-200: #dde3e7;
+  --color-neutral-300: #c3ccd2;
+  --color-neutral-500: #7b8790;
+  --color-neutral-600: #5a6670;
+  --color-neutral-700: #3f4a53;
+  --color-neutral-900: #1b232a;
+
+  --color-cyan-50: #ecfcfd;
+  --color-cyan-100: #cff6f8;
+  --color-cyan-200: #a2eeef;
+  --color-cyan-400: #3fcbd3;
+  --color-cyan-700: #0a7079;
+  --color-cyan-900: #0b3f45;
+
+  --color-open-50: #ecfdf3;
+  --color-open-700: #15803d;
+  --color-merged-50: #f5f0ff;
+  --color-merged-700: #6d3fd1;
+  --color-closed-50: #fef2f2;
+  --color-closed-700: #b91c1c;
+  --color-warning-50: #fff8eb;
+  --color-warning-700: #a15c07;
+
+  --text-*: initial;
+
+  --text-heading-xl: 2rem;
+  --text-heading-xl--line-height: 2.5rem;
+  --text-heading-xl--font-weight: 700;
+  --text-heading-xl--letter-spacing: -0.02em;
+  --text-heading-lg: 1.5rem;
+  --text-heading-lg--line-height: 2rem;
+  --text-heading-lg--font-weight: 700;
+  --text-heading-lg--letter-spacing: -0.01em;
+  --text-heading-sm: 1.125rem;
+  --text-heading-sm--line-height: 1.625rem;
+  --text-heading-sm--font-weight: 600;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.25rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.125rem;
+  --text-data: 0.6875rem;
+  --text-data--line-height: 1rem;
+
+  --radius-*: initial;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-full: 9999px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+  --font-mono: var(--font-martian-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
