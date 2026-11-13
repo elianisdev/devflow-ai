@@ -31,7 +31,7 @@ Code review, test coverage and documentation are usually the first things to sli
 | AI | Gemini API |
 | Testing | Jest, React Testing Library, Playwright |
 | CI/CD | GitHub Actions |
-| Hosting | Google Cloud Run (Docker) |
+| Hosting | Vercel (Cloud Run under evaluation) |
 
 ## Architecture
 
@@ -53,14 +53,15 @@ The UI is built with **Atomic Design** (atoms → molecules → organisms → te
 
 ## Roadmap
 
+The full scope of v0.1, with user stories and acceptance criteria, is in the [requirements document](docs/requirements.md).
+
 ### v0.1 · Foundation
-- [ ] Next.js project setup with TypeScript and Tailwind CSS
+- [x] Next.js project setup with TypeScript and Tailwind CSS
 - [ ] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
 - [ ] Sign in with GitHub
-- [ ] Connect a repository and list its pull requests
 - [ ] Kanban board with keyboard-accessible drag and drop
-- [ ] Link tasks to pull requests
-- [ ] Continuous deployment to Cloud Run
+- [ ] Link tasks to pull requests by URL
+- [ ] Continuous deployment
 
 ### v0.2 · Code reviewer agent
 - [ ] Analyze the PR diff and generate review suggestions
