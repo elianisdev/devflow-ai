@@ -128,7 +128,7 @@ Five requirements apply to every user story. The numeric targets are an initial 
 | Cost | 0 USD per month: free tiers only | Billing review for each service |
 | Quality | Lint and typecheck with no errors; tests for use cases and key components; one end-to-end test of the main flow | CI on every PR |
 
-The interface is responsive from 360 px and uses its own design system, with the same palette as the portfolio.
+The interface is responsive from 360 px and uses its own design system, different from the portfolio: light theme, cyan accent, Instrument Sans and Martian Mono. A dark theme is out of scope for v0.1.
 
 ## Initial data model
 
@@ -150,7 +150,7 @@ The stack reuses the portfolio's foundation and adds what is needed for data, au
 | Piece | Choice | Why |
 | --- | --- | --- |
 | Framework | Next.js 16 (App Router) and TypeScript | Same foundation as the portfolio |
-| Styling | Tailwind CSS and its own design system | Same palette as the portfolio |
+| Styling | Tailwind CSS with its own tokens | Its own visual identity, different from the portfolio |
 | Database | Neon (Postgres) with Prisma | Free and no server to maintain |
 | Authentication | GitHub OAuth | Users already have an account and their PRs live there |
 | Forms | React Hook Form and Zod | Typed validation |
