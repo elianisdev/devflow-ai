@@ -3,13 +3,7 @@ import { PrStateIcon } from "./PrStateIcon";
 
 type PrStateTagProps = {
   state: PrState;
-};
-
-const stateLabels: Record<PrState, string> = {
-  draft: "Draft",
-  open: "Open",
-  merged: "Merged",
-  closed: "Closed",
+  label: string;
 };
 
 const stateClassNames: Record<PrState, string> = {
@@ -19,13 +13,13 @@ const stateClassNames: Record<PrState, string> = {
   closed: "bg-closed-50 text-closed-700",
 };
 
-export function PrStateTag({ state }: PrStateTagProps) {
+export function PrStateTag({ state, label }: PrStateTagProps) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-sm py-0.5 pr-2 pl-1.5 text-caption font-semibold ${stateClassNames[state]}`}
     >
       <PrStateIcon state={state} />
-      {stateLabels[state]}
+      {label}
     </span>
   );
 }
