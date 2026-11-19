@@ -118,7 +118,7 @@ Nothing on this list is discarded; it just does not ship in v0.1. The agents are
 
 ## Non-functional requirements
 
-Five requirements apply to every user story. The numeric targets are an initial proposal and will be reviewed after the first deployment.
+Six requirements apply to every user story. The numeric targets are an initial proposal and will be reviewed after the first deployment.
 
 | Requirement | Target | How it is verified |
 | --- | --- | --- |
@@ -126,6 +126,7 @@ Five requirements apply to every user story. The numeric targets are an initial 
 | Performance | Mobile Lighthouse score of 90 or higher on the home and board pages | Lighthouse on the deployed URL |
 | Security | Secrets only in environment variables; every query filters by the session user; minimal GitHub permissions | Review on every PR and cross-user access tests |
 | Cost | 0 USD per month: free tiers only | Billing review for each service |
+| Bilingual interface | Every screen in English and Spanish; `/` redirects to the browser language, with English as the fallback; no hardcoded text in components | Typed dictionaries: a missing key fails the typecheck |
 | Quality | Lint and typecheck with no errors; tests for use cases and key components; one end-to-end test of the main flow | CI on every PR |
 
 The interface is responsive from 360 px and uses its own design system, different from the portfolio: light theme, cyan accent, Instrument Sans and Martian Mono. A dark theme is out of scope for v0.1.
@@ -189,17 +190,18 @@ Five decisions remain open. Each one has a recommendation and the moment it shou
 
 ## Issue plan
 
-v0.1 is split into 10 issues, each with its own branch and PR. The order puts the foundation first (CI, design, data, deployment) so every feature ships verified and published.
+v0.1 is split into 11 issues, each with its own branch and PR. The order puts the foundation first (CI, design, data, deployment) so every feature ships verified and published.
 
 1. **Scaffold Next.js app with CI** (#1, done). Part of US-08.
-2. **Design system: tokens and base components.** Colors, typography, spacing, button, text field, card.
-3. **Database setup with Prisma and Neon.** Initial schema from the data model.
-4. **Deploy pipeline.** Automatic deployment on merge to main. Part of US-08.
-5. **Sign in with GitHub.** US-01.
-6. **Board with fixed columns and task CRUD.** US-02 and US-03.
-7. **Accessible drag and drop.** US-04.
-8. **Link tasks to pull requests.** US-05 and US-06.
-9. **Demo mode.** US-07.
-10. **End-to-end test and v0.1 release.** End-to-end test of the main flow, tests in CI, public URL in the README and the `v0.1.0` tag. Completes US-08.
+2. **Design system: tokens and base components** (#5, done). Colors, typography, spacing, button, text field, card.
+3. **Bilingual interface (es/en)** (#7). Language routes, typed dictionaries and redirect to the browser language.
+4. **Database setup with Prisma and Neon.** Initial schema from the data model.
+5. **Deploy pipeline.** Automatic deployment on merge to main. Part of US-08.
+6. **Sign in with GitHub.** US-01.
+7. **Board with fixed columns and task CRUD.** US-02 and US-03.
+8. **Accessible drag and drop.** US-04.
+9. **Link tasks to pull requests.** US-05 and US-06.
+10. **Demo mode.** US-07.
+11. **End-to-end test and v0.1 release.** End-to-end test of the main flow, tests in CI, public URL in the README and the `v0.1.0` tag. Completes US-08.
 
-Unit tests are written inside each issue starting with issue 5; the test step joins the CI with the first one.
+Unit tests are written inside each issue starting with issue 6; the test step joins the CI with the first one.
