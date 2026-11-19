@@ -152,7 +152,7 @@ The stack reuses the portfolio's foundation and adds what is needed for data, au
 | --- | --- | --- |
 | Framework | Next.js 16 (App Router) and TypeScript | Same foundation as the portfolio |
 | Styling | Tailwind CSS with its own tokens | Its own visual identity, different from the portfolio |
-| Database | Neon (Postgres) with Prisma | Free and no server to maintain |
+| Database | PostgreSQL with Prisma: Docker locally, Neon in production | Free; local data can be reset without risk, and production has no server to maintain |
 | Authentication | GitHub OAuth | Users already have an account and their PRs live there |
 | Forms | React Hook Form and Zod | Typed validation |
 | Kanban | dnd-kit | Drag and drop accessible with keyboard and screen readers |
@@ -195,8 +195,8 @@ v0.1 is split into 11 issues, each with its own branch and PR. The order puts th
 1. **Scaffold Next.js app with CI** (#1, done). Part of US-08.
 2. **Design system: tokens and base components** (#5, done). Colors, typography, spacing, button, text field, card.
 3. **Bilingual interface (es/en)** (#7). Language routes, typed dictionaries and redirect to the browser language.
-4. **Database setup with Prisma and Neon.** Initial schema from the data model.
-5. **Deploy pipeline.** Automatic deployment on merge to main. Part of US-08.
+4. **Database setup with Prisma and Docker** (#9). Initial schema from the data model and local PostgreSQL in Docker.
+5. **Deploy pipeline.** Production database in Neon and automatic deployment on merge to main. Part of US-08.
 6. **Sign in with GitHub.** US-01.
 7. **Board with fixed columns and task CRUD.** US-02 and US-03.
 8. **Accessible drag and drop.** US-04.

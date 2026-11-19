@@ -26,7 +26,7 @@ Code review, test coverage and documentation are usually the first things to sli
 |---|---|
 | Framework | Next.js (App Router), React, TypeScript |
 | Styling | Tailwind CSS |
-| Data | Prisma + PostgreSQL (Neon) |
+| Data | Prisma + PostgreSQL (Docker locally, Neon in production) |
 | Auth | GitHub OAuth |
 | AI | Gemini API |
 | Testing | Jest, React Testing Library, Playwright |
@@ -57,6 +57,8 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 
 ### v0.1 · Foundation
 - [x] Next.js project setup with TypeScript and Tailwind CSS
+- [x] Bilingual interface (English and Spanish)
+- [x] Database schema with Prisma and local PostgreSQL in Docker
 - [ ] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
 - [ ] Sign in with GitHub
 - [ ] Kanban board with keyboard-accessible drag and drop
@@ -74,6 +76,25 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 
 ### v0.4 · MCP server
 - [ ] Expose tasks and reviews as MCP tools
+
+## Getting started
+
+Requirements: Node.js 24 and Docker.
+
+```bash
+npm install
+cp .env.example .env
+npm run db:up
+npm run db:migrate
+npm run dev
+```
+
+| Script | What it does |
+|---|---|
+| `npm run db:up` | Starts PostgreSQL in Docker and waits until it is ready |
+| `npm run db:down` | Stops the container; data stays in the volume |
+| `npm run db:migrate` | Applies migrations and generates the Prisma client |
+| `npm run db:studio` | Opens Prisma Studio to browse the data |
 
 ## Workflow
 
