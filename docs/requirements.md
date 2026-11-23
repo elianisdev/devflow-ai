@@ -137,12 +137,12 @@ Four domain entities are enough for v0.1. Columns are not a table: they are a fi
 
 | Entity | Main fields | Relationship |
 | --- | --- | --- |
-| User | id, githubId, login, name, avatarUrl | Has one Board |
+| User | id, login, name, email, avatarUrl | Has one Board; has many Sessions and Accounts |
 | Board | id, userId, name, createdAt | Belongs to a User; has many Tasks |
 | Task | id, boardId, title, description, status (TODO, IN_PROGRESS, IN_REVIEW, DONE), position, createdAt, updatedAt | Belongs to a Board; has zero or one PullRequestLink |
 | PullRequestLink | id, taskId, owner, repo, number, url, title, state (DRAFT, OPEN, MERGED, CLOSED), syncedAt | Belongs to a Task |
 
-Session and OAuth account tables are defined by the authentication library through its Prisma adapter; they are not designed by hand. PullRequestLink stores a copy of the PR state so the board renders without calling GitHub for every card.
+Session, Account and Verification tables follow the schema required by Better Auth; the GitHub account id lives in Account, so User does not repeat it. PullRequestLink stores a copy of the PR state so the board renders without calling GitHub for every card.
 
 ## Stack and architecture
 
@@ -153,7 +153,7 @@ The stack reuses the portfolio's foundation and adds what is needed for data, au
 | Framework | Next.js 16 (App Router) and TypeScript | Same foundation as the portfolio |
 | Styling | Tailwind CSS with its own tokens | Its own visual identity, different from the portfolio |
 | Database | PostgreSQL with Prisma: Docker locally, Neon in production | Free; local data can be reset without risk, and production has no server to maintain |
-| Authentication | GitHub OAuth | Users already have an account and their PRs live there |
+| Authentication | GitHub OAuth with Better Auth | Users already have an account and their PRs live there; Better Auth is stable on Next.js 16 and Prisma 7 |
 | Forms | React Hook Form and Zod | Typed validation |
 | Kanban | dnd-kit | Drag and drop accessible with keyboard and screen readers |
 | Testing | Jest, Testing Library and Playwright | Unit, component and end-to-end tests |
@@ -180,10 +180,10 @@ The arrows point toward the domain: business rules know nothing about Prisma or 
 
 ## Open decisions
 
-Five decisions remain open. Each one has a recommendation and the moment it should be settled.
+Each decision has a recommendation and the moment it should be settled. Settled decisions are checked.
 
-- [ ] **Authentication library.** Recommendation: choose between Auth.js and Better Auth based on which has stable Next.js 16 support and a Prisma adapter. Settle before the sign-in issue.
-- [ ] **GitHub permissions.** Recommendation: public repositories only in v0.1, without requesting the `repo` scope. It asks users for less access and fits the rule of never sending private code to the AI in v0.2. Settle before the sign-in issue.
+- [x] **Authentication library.** Settled: Better Auth. It has stable releases that support Next.js 16 and Prisma 7, while Auth.js v5 is still in beta.
+- [x] **GitHub permissions.** Settled: sign-in only requests `read:user` and `user:email`, without the `repo` scope. It asks users for less access and fits the rule of never sending private code to the AI in v0.2.
 - [ ] **Deployment: Vercel or Cloud Run.** Recommendation: Vercel while building v0.1, since it does not require a credit card. When v0.1 is done, decide whether to move to Cloud Run; only `deploy.yml` changes.
 - [ ] **Demo mode data.** Recommendation: a sample data file inside the repository, with no database. Settle in the demo mode issue.
 - [ ] **Design system.** Recommendation: define colors, typography, spacing and base components before the first screen. It is the next document after this one.

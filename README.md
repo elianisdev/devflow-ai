@@ -27,7 +27,7 @@ Code review, test coverage and documentation are usually the first things to sli
 | Framework | Next.js (App Router), React, TypeScript |
 | Styling | Tailwind CSS |
 | Data | Prisma + PostgreSQL (Docker locally, Neon in production) |
-| Auth | GitHub OAuth |
+| Auth | GitHub OAuth with Better Auth |
 | AI | Gemini API |
 | Testing | Jest, React Testing Library, Playwright |
 | CI/CD | GitHub Actions |
@@ -60,7 +60,7 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [x] Bilingual interface (English and Spanish)
 - [x] Database schema with Prisma and local PostgreSQL in Docker
 - [ ] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
-- [ ] Sign in with GitHub
+- [x] Sign in with GitHub
 - [ ] Kanban board with keyboard-accessible drag and drop
 - [ ] Link tasks to pull requests by URL
 - [x] Continuous deployment
@@ -88,6 +88,8 @@ npm run db:up
 npm run db:migrate
 npm run dev
 ```
+
+Sign-in needs a [GitHub OAuth App](https://github.com/settings/applications/new) with `http://localhost:3000/api/auth/callback/github` as the callback URL. Copy its client ID and secret into `.env`, and generate `BETTER_AUTH_SECRET` with `openssl rand -base64 32`.
 
 | Script | What it does |
 |---|---|
