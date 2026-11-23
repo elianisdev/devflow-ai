@@ -13,6 +13,18 @@ export const en = {
       "DevFlow AI is a task board for development teams. Each card shows the real state of its GitHub pull request, so nobody has to switch tools to know what is in review or already merged.",
     prStatesTitle: "Pull request states",
   },
+  auth: {
+    signIn: "Continue with GitHub",
+    signingIn: "Redirecting to GitHub…",
+    signOut: "Sign out",
+    signInCancelled: "You cancelled the sign-in on GitHub. You can try again whenever you want.",
+    signInFailed: "We couldn't sign you in with GitHub. Please try again.",
+  },
+  board: {
+    title: "Your board",
+    comingSoon: "Your tasks will appear here soon.",
+    userMenuLabel: "User menu",
+  },
   prStates: {
     draft: "Draft",
     open: "Open",
