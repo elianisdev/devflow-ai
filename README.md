@@ -63,7 +63,7 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [ ] Sign in with GitHub
 - [ ] Kanban board with keyboard-accessible drag and drop
 - [ ] Link tasks to pull requests by URL
-- [ ] Continuous deployment
+- [x] Continuous deployment
 
 ### v0.2 · Code reviewer agent
 - [ ] Analyze the PR diff and generate review suggestions
