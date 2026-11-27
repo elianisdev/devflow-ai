@@ -62,7 +62,7 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [x] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
 - [x] Sign in with GitHub
 - [x] Kanban board with fixed columns and task CRUD
-- [ ] Keyboard-accessible drag and drop
+- [x] Keyboard-accessible drag and drop
 - [ ] Link tasks to pull requests by URL
 - [x] Continuous deployment
 
