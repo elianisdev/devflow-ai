@@ -6,9 +6,17 @@ import { UserMenu } from "@/components/molecules/UserMenu";
 import { TaskBoard } from "@/components/organisms/TaskBoard";
 import { getDictionary, getLocale } from "@/content/get-dictionary";
 import { boardUseCases } from "@/infrastructure/board-use-cases";
+import { pullRequestUseCases } from "@/infrastructure/pull-request-use-cases";
 import { formatCount, formatMessage } from "@/lib/format-message";
 import { getCurrentSession } from "@/lib/session";
-import { createTaskAction, deleteTaskAction, moveTaskAction, updateTaskAction } from "./actions";
+import {
+  createTaskAction,
+  deleteTaskAction,
+  linkPullRequestAction,
+  moveTaskAction,
+  unlinkPullRequestAction,
+  updateTaskAction,
+} from "./actions";
 
 async function BoardContent() {
   const [locale, dictionary, session] = await Promise.all([getLocale(), getDictionary(), getCurrentSession()]);
@@ -16,8 +24,10 @@ async function BoardContent() {
   if (!session) redirect(`/${locale}`);
 
   const { user } = session;
-  const { board, taskForm, deleteTask, auth } = dictionary;
-  const { tasks } = await boardUseCases.getBoard({ id: user.id, login: user.login });
+  const { board, taskForm, deleteTask, auth, pullRequest, prStates } = dictionary;
+  const owner = { id: user.id, login: user.login };
+  await pullRequestUseCases.refreshPullRequests(owner);
+  const { tasks } = await boardUseCases.getBoard(owner);
 
   const doneCount = tasks.filter((task) => task.status === "DONE").length;
   const summary = [
@@ -68,13 +78,23 @@ async function BoardContent() {
       <div className="-mt-[13px] flex-1 overflow-x-auto">
         <div className="min-w-[880px]">
           <TaskBoard
-            tasks={tasks.map(({ id, title, description, status, position }) => ({ id, title, description, status, position }))}
+            tasks={tasks.map(({ id, title, description, status, position, pullRequest }) => ({
+              id,
+              title,
+              description,
+              status,
+              position,
+              pullRequest,
+            }))}
+            locale={locale}
             labels={{
               columns: board.columns,
               stationEmpty: board.stationEmpty,
               taskCountOne: board.taskCountOne,
               taskCountMany: board.taskCountMany,
-              noPullRequest: board.noPullRequest,
+              card: { noPullRequest: board.noPullRequest, prStates },
+              pullRequest: { ...pullRequest, prStates },
+              suggestion: board.suggestion,
               detailTitle: taskForm.detailTitle,
               close: taskForm.close,
               statusLabel: taskForm.status,
@@ -95,6 +115,8 @@ async function BoardContent() {
             updateTaskAction={updateTaskAction}
             deleteTaskAction={deleteTaskAction}
             moveTaskAction={moveTaskAction}
+            linkPullRequestAction={linkPullRequestAction}
+            unlinkPullRequestAction={unlinkPullRequestAction}
           />
         </div>
       </div>

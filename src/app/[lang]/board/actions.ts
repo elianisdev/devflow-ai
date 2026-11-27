@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import type { BoardOwner, RawTaskInput } from "@/application/board/board-dependencies";
 import type { TaskStatus } from "@/domain/board/task";
 import { boardUseCases } from "@/infrastructure/board-use-cases";
+import { pullRequestUseCases } from "@/infrastructure/pull-request-use-cases";
 import { getCurrentSession } from "@/lib/session";
+import type { PullRequestFormState } from "@/types/pull-request";
 import type { TaskFormState } from "@/types/task-form";
 
 const getOwner = async (): Promise<BoardOwner> => {
@@ -51,5 +53,21 @@ export async function moveTaskAction(taskId: string, status: TaskStatus, index: 
 
 export async function deleteTaskAction(taskId: string): Promise<void> {
   await boardUseCases.deleteTask(await getOwner(), taskId);
+  refreshBoard();
+}
+
+export async function linkPullRequestAction(
+  taskId: string,
+  _state: PullRequestFormState,
+  formData: FormData,
+): Promise<PullRequestFormState> {
+  const result = await pullRequestUseCases.linkPullRequest(await getOwner(), taskId, formData.get("url"));
+  if (!result.success) return { error: result.error };
+  refreshBoard();
+  return { success: true };
+}
+
+export async function unlinkPullRequestAction(taskId: string): Promise<void> {
+  await pullRequestUseCases.unlinkPullRequest(await getOwner(), taskId);
   refreshBoard();
 }

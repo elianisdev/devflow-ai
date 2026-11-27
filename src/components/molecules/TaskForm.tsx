@@ -34,6 +34,7 @@ type TaskFormProps = {
   onSuccess: () => void;
   secondaryAction?: ReactNode;
   statusField?: TaskStatusField;
+  afterDescription?: ReactNode;
 };
 
 export function TaskForm({
@@ -45,6 +46,7 @@ export function TaskForm({
   onSuccess,
   secondaryAction,
   statusField,
+  afterDescription,
 }: TaskFormProps) {
   const [state, formAction, isPending] = useActionState(action, {});
   const [title, setTitle] = useState(defaultTitle);
@@ -80,6 +82,7 @@ export function TaskForm({
         placeholder={labels.descriptionPlaceholder}
         defaultValue={defaultDescription}
       />
+      {afterDescription}
       {statusField && (
         <Select
           id={statusId}

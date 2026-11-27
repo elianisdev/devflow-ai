@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useId, useState, type CSSProperties, type HTMLAttributes } from "react";
+import { useCallback, useId, useState, type CSSProperties, type HTMLAttributes, type ReactNode } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Dialog } from "@/components/atoms/Dialog";
 import { DeleteTaskDialog, type DeleteTaskLabels } from "@/components/molecules/DeleteTaskDialog";
-import { TaskCardFace } from "@/components/molecules/TaskCardFace";
+import { TaskCardFace, type CardPullRequest, type TaskCardFaceLabels } from "@/components/molecules/TaskCardFace";
 import { TaskForm, type TaskFormLabels, type TaskStatusField } from "@/components/molecules/TaskForm";
 import type { TaskFormAction } from "@/types/task-form";
 
@@ -12,7 +12,9 @@ type TaskCardProps = {
   title: string;
   description: string | null;
   columnTitle: string;
-  noPullRequestLabel: string;
+  pullRequest: CardPullRequest | null;
+  faceLabels: TaskCardFaceLabels;
+  pullRequestSection: ReactNode;
   detailTitle: string;
   closeLabel: string;
   formLabels: TaskFormLabels;
@@ -20,6 +22,7 @@ type TaskCardProps = {
   updateAction: TaskFormAction;
   deleteAction: () => Promise<void>;
   statusField: TaskStatusField;
+  cardId?: string;
   cardRef?: (node: HTMLElement | null) => void;
   dragProps?: HTMLAttributes<HTMLButtonElement>;
   cardStyle?: CSSProperties;
@@ -33,7 +36,9 @@ export function TaskCard({
   title,
   description,
   columnTitle,
-  noPullRequestLabel,
+  pullRequest,
+  faceLabels,
+  pullRequestSection,
   detailTitle,
   closeLabel,
   formLabels,
@@ -41,6 +46,7 @@ export function TaskCard({
   updateAction,
   deleteAction,
   statusField,
+  cardId,
   cardRef,
   dragProps,
   cardStyle,
@@ -65,6 +71,7 @@ export function TaskCard({
     <>
       <button
         ref={cardRef}
+        id={cardId}
         type="button"
         style={cardStyle}
         {...dragProps}
@@ -75,7 +82,7 @@ export function TaskCard({
             : "flex w-full touch-manipulation flex-col gap-2 rounded-md border border-neutral-200 bg-neutral-0 p-3.5 text-left transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700 motion-reduce:transition-none"
         }
       >
-        <TaskCardFace title={title} description={description} noPullRequestLabel={noPullRequestLabel} />
+        <TaskCardFace title={title} description={description} pullRequest={pullRequest} labels={faceLabels} />
       </button>
       <Dialog open={openDialog === "detail"} onClose={close} labelledBy={titleId} className="max-w-lg">
         <div className="flex flex-col gap-5">
@@ -102,6 +109,7 @@ export function TaskCard({
               onCancel={close}
               onSuccess={close}
               statusField={statusField}
+              afterDescription={pullRequestSection}
               secondaryAction={
                 <Button variant="dangerGhost" onClick={() => setOpenDialog("delete")}>
                   {deleteLabels.open}
