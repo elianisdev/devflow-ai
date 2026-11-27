@@ -1,3 +1,4 @@
+import type { LinkPullRequestErrorCode } from "@/application/pull-request/link-pull-request";
 import type { TaskStatus } from "@/domain/board/task";
 import type { TaskInputErrorCode } from "@/domain/board/task-input";
 import type { PrState } from "@/types/pull-request";
@@ -34,6 +35,11 @@ export const en = {
     taskCountOne: "1 task",
     taskCountMany: "{count} tasks",
     doneCount: "{count} done",
+    suggestion: {
+      action: "Move to {column}",
+      label: "Move “{title}” to {column}. Pull request state: {state}.",
+      moved: "“{title}” moved to {column}.",
+    },
     drag: {
       roleDescription: "draggable task",
       instructions:
@@ -92,6 +98,25 @@ export const en = {
       titleRequired: "Write a title for the task.",
       titleTooLong: "Use 120 characters or fewer.",
     } satisfies Record<TaskInputErrorCode, string>,
+  },
+  pullRequest: {
+    heading: "Pull request",
+    url: "Pull request URL",
+    urlPlaceholder: "https://github.com/owner/repo/pull/123",
+    urlHint: "Paste the URL of a pull request from a public repository.",
+    link: "Link pull request",
+    linking: "Linking…",
+    unlink: "Unlink pull request",
+    unlinking: "Unlinking…",
+    unlinkFailed: "We could not unlink the pull request. Please try again.",
+    opensInNewTab: "(opens in a new tab)",
+    syncedAt: "Updated {time}",
+    errors: {
+      invalidUrl: "That is not a GitHub pull request URL. It should look like https://github.com/owner/repo/pull/123.",
+      notFound: "We could not find that pull request or your account has no access. Check the number and that the repository is public.",
+      unauthorized: "Your GitHub connection expired. Sign out and sign in again to link pull requests.",
+      unavailable: "GitHub did not respond. Please try again in a moment.",
+    } satisfies Record<LinkPullRequestErrorCode, string>,
   },
   deleteTask: {
     open: "Delete task",

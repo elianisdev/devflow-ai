@@ -2,6 +2,7 @@ import type { PrismaClient } from "@/generated/prisma/client";
 import type { TaskRepository } from "@/domain/board/board-repositories";
 import type { TaskStatus } from "@/domain/board/task";
 import { placeInOrder } from "@/domain/board/task-move";
+import { fromPrismaPullRequestState } from "@/infrastructure/prisma/prisma-pull-request-state";
 
 const taskFields = {
   id: true,
@@ -12,6 +13,16 @@ const taskFields = {
   position: true,
   createdAt: true,
   updatedAt: true,
+} as const;
+
+const linkedPullRequestFields = {
+  owner: true,
+  repo: true,
+  number: true,
+  url: true,
+  title: true,
+  state: true,
+  syncedAt: true,
 } as const;
 
 type TransactionClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
@@ -25,12 +36,20 @@ const saveColumnOrder = (tx: TransactionClient, orderedIds: string[], status: Ta
   Promise.all(orderedIds.map((id, position) => tx.task.update({ where: { id }, data: { status, position } })));
 
 export const createPrismaTaskRepository = (client: PrismaClient): TaskRepository => ({
-  listByBoard: (boardId) =>
-    client.task.findMany({
+  listByBoard: async (boardId) => {
+    const tasks = await client.task.findMany({
       where: { boardId },
       orderBy: [{ status: "asc" }, { position: "asc" }],
-      select: taskFields,
-    }),
+      select: { ...taskFields, pullRequestLink: { select: linkedPullRequestFields } },
+    });
+    return tasks.map(({ pullRequestLink, ...task }) => ({
+      ...task,
+      pullRequest: pullRequestLink && {
+        ...pullRequestLink,
+        state: fromPrismaPullRequestState(pullRequestLink.state),
+      },
+    }));
+  },
 
   nextPosition: async (boardId, status) => {
     const { _max } = await client.task.aggregate({ where: { boardId, status }, _max: { position: true } });

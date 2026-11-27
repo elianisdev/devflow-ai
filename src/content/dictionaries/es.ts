@@ -32,6 +32,11 @@ export const es: Dictionary = {
     taskCountOne: "1 tarea",
     taskCountMany: "{count} tareas",
     doneCount: "{count} en hecho",
+    suggestion: {
+      action: "Mover a {column}",
+      label: "Mover «{title}» a {column}. Estado de su PR: {state}.",
+      moved: "«{title}» se movió a {column}.",
+    },
     drag: {
       roleDescription: "tarea arrastrable",
       instructions:
@@ -89,6 +94,25 @@ export const es: Dictionary = {
     errors: {
       titleRequired: "Escribe un título para la tarea.",
       titleTooLong: "Usa 120 caracteres o menos.",
+    },
+  },
+  pullRequest: {
+    heading: "Pull Request",
+    url: "URL del PR",
+    urlPlaceholder: "https://github.com/owner/repo/pull/123",
+    urlHint: "Pega la URL de un PR de un repositorio público.",
+    link: "Vincular PR",
+    linking: "Vinculando…",
+    unlink: "Desvincular PR",
+    unlinking: "Desvinculando…",
+    unlinkFailed: "No pudimos desvincular el PR. Inténtalo de nuevo.",
+    opensInNewTab: "(se abre en una pestaña nueva)",
+    syncedAt: "Actualizado {time}",
+    errors: {
+      invalidUrl: "Esa URL no es de un PR de GitHub. Debe verse así: https://github.com/owner/repo/pull/123.",
+      notFound: "No encontramos ese PR o tu cuenta no tiene acceso. Revisa el número y que el repositorio sea público.",
+      unauthorized: "Tu conexión con GitHub venció. Cierra sesión y vuelve a entrar para vincular PRs.",
+      unavailable: "GitHub no respondió. Inténtalo de nuevo en un momento.",
     },
   },
   deleteTask: {

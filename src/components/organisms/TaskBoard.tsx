@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   closestCorners,
   DndContext,
@@ -24,9 +24,16 @@ import { BoardStation } from "@/components/molecules/BoardStation";
 import { ColumnEmptyState } from "@/components/molecules/ColumnEmptyState";
 import type { DeleteTaskLabels } from "@/components/molecules/DeleteTaskDialog";
 import { TaskCard } from "@/components/molecules/TaskCard";
-import { TaskCardFace } from "@/components/molecules/TaskCardFace";
+import {
+  PullRequestSection,
+  type PullRequestSectionLabels,
+  type SectionPullRequest,
+} from "@/components/molecules/PullRequestSection";
+import { SuggestedMoveButton } from "@/components/molecules/SuggestedMoveButton";
+import { TaskCardFace, type TaskCardFaceLabels } from "@/components/molecules/TaskCardFace";
 import type { TaskFormLabels } from "@/components/molecules/TaskForm";
 import { BoardMetroLine } from "@/components/organisms/BoardMetroLine";
+import { suggestColumn } from "@/domain/board/suggested-column";
 import { taskStatuses, type TaskStatus } from "@/domain/board/task";
 import {
   findColumnOf,
@@ -35,8 +42,10 @@ import {
   moveToColumnOf,
   reorderInColumn,
   type BoardColumns,
+  type TaskLocation,
 } from "@/lib/board-columns";
 import { formatCount, formatMessage } from "@/lib/format-message";
+import type { PullRequestFormState } from "@/types/pull-request";
 import type { TaskFormState } from "@/types/task-form";
 
 type BoardTask = {
@@ -45,6 +54,7 @@ type BoardTask = {
   description: string | null;
   status: TaskStatus;
   position: number;
+  pullRequest: SectionPullRequest | null;
 };
 
 export type TaskBoardLabels = {
@@ -52,7 +62,9 @@ export type TaskBoardLabels = {
   stationEmpty: string;
   taskCountOne: string;
   taskCountMany: string;
-  noPullRequest: string;
+  card: TaskCardFaceLabels;
+  pullRequest: PullRequestSectionLabels;
+  suggestion: { action: string; label: string; moved: string };
   detailTitle: string;
   close: string;
   statusLabel: string;
@@ -79,10 +91,13 @@ export type TaskBoardLabels = {
 type TaskBoardProps = {
   tasks: BoardTask[];
   labels: TaskBoardLabels;
+  locale: string;
   todoEmptyAction: ReactNode;
   updateTaskAction: (taskId: string, currentStatus: TaskStatus, state: TaskFormState, formData: FormData) => Promise<TaskFormState>;
   deleteTaskAction: (taskId: string) => Promise<void>;
   moveTaskAction: (taskId: string, status: TaskStatus, index: number) => Promise<void>;
+  linkPullRequestAction: (taskId: string, state: PullRequestFormState, formData: FormData) => Promise<PullRequestFormState>;
+  unlinkPullRequestAction: (taskId: string) => Promise<void>;
 };
 
 type MoveNotice = {
@@ -102,34 +117,59 @@ function ColumnDropZone({ status, label, children }: { status: TaskStatus; label
   );
 }
 
+type SortableTaskProps = Pick<
+  TaskBoardProps,
+  "labels" | "locale" | "updateTaskAction" | "deleteTaskAction" | "linkPullRequestAction" | "unlinkPullRequestAction"
+> & {
+  task: BoardTask;
+  status: TaskStatus;
+  shouldIgnoreClick: () => boolean;
+  onSuggestedMove: (taskId: string, target: TaskStatus) => void;
+};
+
+const cardDomId = (taskId: string) => `task-card-${taskId}`;
+
 function SortableTask({
   task,
   status,
   labels,
+  locale,
   shouldIgnoreClick,
   updateTaskAction,
   deleteTaskAction,
-}: {
-  task: BoardTask;
-  status: TaskStatus;
-  labels: TaskBoardLabels;
-  shouldIgnoreClick: () => boolean;
-  updateTaskAction: TaskBoardProps["updateTaskAction"];
-  deleteTaskAction: TaskBoardProps["deleteTaskAction"];
-}) {
+  linkPullRequestAction,
+  unlinkPullRequestAction,
+  onSuggestedMove,
+}: SortableTaskProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
     attributes: { roleDescription: labels.drag.roleDescription },
   });
   const tone = statusToneClassNames[status];
+  const suggestedStatus = task.pullRequest && suggestColumn(status, task.pullRequest.state);
+  const suggestionValues = suggestedStatus && {
+    title: task.title,
+    column: labels.columns[suggestedStatus].title,
+    state: task.pullRequest ? labels.card.prStates[task.pullRequest.state].toLowerCase() : "",
+  };
 
   return (
-    <li>
+    <li className="flex flex-col">
       <TaskCard
         title={task.title}
         description={task.description}
         columnTitle={labels.columns[status].title}
-        noPullRequestLabel={labels.noPullRequest}
+        pullRequest={task.pullRequest}
+        faceLabels={labels.card}
+        pullRequestSection={
+          <PullRequestSection
+            pullRequest={task.pullRequest}
+            labels={labels.pullRequest}
+            locale={locale}
+            linkAction={linkPullRequestAction.bind(null, task.id)}
+            unlinkAction={unlinkPullRequestAction.bind(null, task.id)}
+          />
+        }
         detailTitle={labels.detailTitle}
         closeLabel={labels.close}
         formLabels={labels.editForm}
@@ -142,12 +182,21 @@ function SortableTask({
           defaultValue: status,
           options: taskStatuses.map((value) => ({ value, label: labels.columns[value].title })),
         }}
+        cardId={cardDomId(task.id)}
         cardRef={setNodeRef}
         dragProps={{ ...attributes, ...listeners }}
         cardStyle={{ transform: CSS.Transform.toString(transform), transition }}
         placeholderClassName={isDragging ? `${tone.border} ${tone.softBackground}` : undefined}
         shouldIgnoreClick={shouldIgnoreClick}
       />
+      {suggestedStatus && suggestionValues && !isDragging && (
+        <SuggestedMoveButton
+          status={suggestedStatus}
+          label={formatMessage(labels.suggestion.action, suggestionValues)}
+          accessibleLabel={formatMessage(labels.suggestion.label, suggestionValues)}
+          onMove={() => onSuggestedMove(task.id, suggestedStatus)}
+        />
+      )}
     </li>
   );
 }
@@ -155,10 +204,13 @@ function SortableTask({
 export function TaskBoard({
   tasks,
   labels,
+  locale,
   todoEmptyAction,
   updateTaskAction,
   deleteTaskAction,
   moveTaskAction,
+  linkPullRequestAction,
+  unlinkPullRequestAction,
 }: TaskBoardProps) {
   const [serverTasks, setServerTasks] = useState(tasks);
   const [columns, setColumns] = useState<BoardColumns>(() => groupTaskIds(tasks));
@@ -166,10 +218,18 @@ export function TaskBoard({
   const [overStatus, setOverStatus] = useState<TaskStatus | null>(null);
   const [isKeyboardDrag, setIsKeyboardDrag] = useState(false);
   const [moveNotice, setMoveNotice] = useState<MoveNotice | null>(null);
+  const [moveAnnouncement, setMoveAnnouncement] = useState("");
   const [, startTransition] = useTransition();
   const dndContextId = useId();
   const columnsBeforeDrag = useRef<BoardColumns>(columns);
   const ignoreClicksUntil = useRef(0);
+  const pendingFocusId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!pendingFocusId.current) return;
+    document.getElementById(cardDomId(pendingFocusId.current))?.focus();
+    pendingFocusId.current = null;
+  });
 
   if (tasks !== serverTasks) {
     setServerTasks(tasks);
@@ -251,14 +311,33 @@ export function TaskBoard({
     setColumns(next);
     if (!before || !after || (before.status === after.status && before.index === after.index)) return;
 
+    saveMove(taskId, after, previous, before.status);
+  };
+
+  const saveMove = (taskId: string, target: TaskLocation, previous: BoardColumns, previousStatus: TaskStatus) =>
     startTransition(async () => {
       try {
-        await moveTaskAction(taskId, after.status, after.index);
+        await moveTaskAction(taskId, target.status, target.index);
       } catch {
         setColumns(previous);
-        setMoveNotice({ title: titleOf(taskId), column: labels.columns[before.status].title });
+        setMoveNotice({ title: titleOf(taskId), column: labels.columns[previousStatus].title });
       }
     });
+
+  const moveToSuggestedColumn = (taskId: string, target: TaskStatus) => {
+    const previous = columns;
+    const before = locateTask(previous, taskId);
+    const next = moveToColumnOf(previous, taskId, target);
+    const after = locateTask(next, taskId);
+    if (!before || !after) return;
+
+    setMoveNotice(null);
+    setColumns(next);
+    setMoveAnnouncement(
+      formatMessage(labels.suggestion.moved, { title: titleOf(taskId), column: labels.columns[target].title }),
+    );
+    pendingFocusId.current = taskId;
+    saveMove(taskId, after, previous, before.status);
   };
 
   const handleDragCancel = () => {
@@ -306,6 +385,9 @@ export function TaskBoard({
           />
         ))}
       </BoardMetroLine>
+      <p role="status" className="sr-only">
+        {moveAnnouncement}
+      </p>
       {moveNotice && (
         <div className="px-6 pt-5">
           <div
@@ -350,9 +432,13 @@ export function TaskBoard({
                         task={task}
                         status={status}
                         labels={labels}
+                        locale={locale}
                         shouldIgnoreClick={shouldIgnoreClick}
                         updateTaskAction={updateTaskAction}
                         deleteTaskAction={deleteTaskAction}
+                        linkPullRequestAction={linkPullRequestAction}
+                        unlinkPullRequestAction={unlinkPullRequestAction}
+                        onSuggestedMove={moveToSuggestedColumn}
                       />
                     );
                   })
@@ -370,7 +456,8 @@ export function TaskBoard({
             <TaskCardFace
               title={activeTask.title}
               description={activeTask.description}
-              noPullRequestLabel={labels.noPullRequest}
+              pullRequest={activeTask.pullRequest}
+              labels={labels.card}
             />
           </div>
         )}
