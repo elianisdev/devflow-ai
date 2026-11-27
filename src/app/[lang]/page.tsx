@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { getButtonClassName } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
 import { PrStateTag } from "@/components/atoms/PrStateTag";
 import { SignInButton } from "@/components/molecules/SignInButton";
@@ -19,13 +21,22 @@ export default async function Home() {
       <Suspense>
         <SignInMessage cancelledMessage={auth.signInCancelled} failedMessage={auth.signInFailed} />
       </Suspense>
-      <div>
-        <SignInButton
-          label={auth.signIn}
-          pendingLabel={auth.signingIn}
-          callbackURL={`/${locale}/board`}
-          errorCallbackURL={`/${locale}`}
-        />
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <SignInButton
+            label={auth.signIn}
+            pendingLabel={auth.signingIn}
+            callbackURL={`/${locale}/board`}
+            errorCallbackURL={`/${locale}`}
+          />
+          <Link href={`/${locale}/demo`} className={getButtonClassName("secondary")}>
+            {home.viewDemo}
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 8h9M8.5 4.5L12 8l-3.5 3.5" />
+            </svg>
+          </Link>
+        </div>
+        <p className="text-caption text-neutral-600">{home.demoHint}</p>
       </div>
       <Card className="flex flex-col gap-3">
         <span className="font-mono text-data text-neutral-600">{home.prStatesTitle}</span>

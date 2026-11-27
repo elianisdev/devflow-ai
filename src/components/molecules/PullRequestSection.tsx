@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState, useTransition } from "react";
+import { useActionState, useId, useState, useTransition, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/atoms/Button";
 import { FieldMessage } from "@/components/atoms/FieldMessage";
@@ -44,6 +44,7 @@ type PullRequestSectionProps = {
   locale: string;
   linkAction: PullRequestFormAction;
   unlinkAction: () => Promise<void>;
+  linkNotice?: ReactNode;
 };
 
 function LinkPullRequestForm({ labels, linkAction }: Pick<PullRequestSectionProps, "labels" | "linkAction">) {
@@ -143,7 +144,14 @@ function LinkedPullRequest({
   );
 }
 
-export function PullRequestSection({ pullRequest, labels, locale, linkAction, unlinkAction }: PullRequestSectionProps) {
+export function PullRequestSection({
+  pullRequest,
+  labels,
+  locale,
+  linkAction,
+  unlinkAction,
+  linkNotice,
+}: PullRequestSectionProps) {
   const headingId = useId();
 
   return (
@@ -154,7 +162,7 @@ export function PullRequestSection({ pullRequest, labels, locale, linkAction, un
       {pullRequest ? (
         <LinkedPullRequest pullRequest={pullRequest} labels={labels} locale={locale} unlinkAction={unlinkAction} />
       ) : (
-        <LinkPullRequestForm labels={labels} linkAction={linkAction} />
+        (linkNotice ?? <LinkPullRequestForm labels={labels} linkAction={linkAction} />)
       )}
     </section>
   );

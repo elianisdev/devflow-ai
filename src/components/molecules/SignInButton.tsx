@@ -9,9 +9,16 @@ type SignInButtonProps = {
   pendingLabel: string;
   callbackURL: string;
   errorCallbackURL: string;
+  variant?: "primary" | "secondary";
 };
 
-export function SignInButton({ label, pendingLabel, callbackURL, errorCallbackURL }: SignInButtonProps) {
+export function SignInButton({
+  label,
+  pendingLabel,
+  callbackURL,
+  errorCallbackURL,
+  variant = "primary",
+}: SignInButtonProps) {
   const [isPending, setIsPending] = useState(false);
 
   const signIn = async () => {
@@ -21,7 +28,7 @@ export function SignInButton({ label, pendingLabel, callbackURL, errorCallbackUR
   };
 
   return (
-    <Button onClick={signIn} disabled={isPending} aria-busy={isPending}>
+    <Button variant={variant} onClick={signIn} disabled={isPending} aria-busy={isPending}>
       {isPending ? pendingLabel : label}
     </Button>
   );

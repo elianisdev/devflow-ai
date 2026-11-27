@@ -17,12 +17,9 @@ const variantClassNames: Record<ButtonVariant, string> = {
   dangerGhost: "border-transparent bg-transparent text-closed-700 hover:bg-closed-50",
 };
 
+export const getButtonClassName = (variant: ButtonVariant = "primary", className = "") =>
+  `${baseClassName} ${variantClassNames[variant]} ${className}`;
+
 export function Button({ variant = "primary", type = "button", className = "", ...props }: ButtonProps) {
-  return (
-    <button
-      type={type}
-      className={`${baseClassName} ${variantClassNames[variant]} ${className}`}
-      {...props}
-    />
-  );
+  return <button type={type} className={getButtonClassName(variant, className)} {...props} />;
 }
