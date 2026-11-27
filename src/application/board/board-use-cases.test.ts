@@ -3,7 +3,7 @@ import { deleteTask } from "@/application/board/delete-task";
 import { getBoard } from "@/application/board/get-board";
 import { updateTask } from "@/application/board/update-task";
 import { TaskNotFoundError } from "@/domain/board/task-not-found-error";
-import { createInMemoryBoardDependencies } from "@/test/in-memory-board-repositories";
+import { createInMemoryBoardDependencies } from "@/infrastructure/memory/in-memory-board-repositories";
 
 const owner = { id: "user-1", login: "elianisdev" };
 const stranger = { id: "user-2", login: "someone" };

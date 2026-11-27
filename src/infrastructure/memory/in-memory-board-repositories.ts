@@ -16,6 +16,7 @@ export const createInMemoryBoardDependencies = (): InMemoryBoardDependencies => 
   const boardList: Board[] = [];
   const taskList: Task[] = [];
   const linkList: StoredLink[] = [];
+  let createdTaskCount = 0;
   const isOwnedBy = (userId: string, task: Task) =>
     boardList.some((board) => board.id === task.boardId && board.userId === userId);
 
@@ -47,7 +48,7 @@ export const createInMemoryBoardDependencies = (): InMemoryBoardDependencies => 
         taskList.filter((task) => task.boardId === boardId && task.status === status).length,
       create: async (input) => {
         const now = new Date();
-        const task = { ...input, id: `task-${taskList.length + 1}`, createdAt: now, updatedAt: now };
+        const task = { ...input, id: `task-${(createdTaskCount += 1)}`, createdAt: now, updatedAt: now };
         taskList.push(task);
         return task;
       },
@@ -61,6 +62,8 @@ export const createInMemoryBoardDependencies = (): InMemoryBoardDependencies => 
         const index = taskList.findIndex((item) => item.id === taskId && isOwnedBy(userId, item));
         if (index === -1) return false;
         taskList.splice(index, 1);
+        const linkIndex = linkList.findIndex((link) => link.taskId === taskId);
+        if (linkIndex !== -1) linkList.splice(linkIndex, 1);
         return true;
       },
       moveOwnedBy: async (userId, taskId, { status, index }) => {

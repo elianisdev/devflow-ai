@@ -12,6 +12,17 @@ export const es: Dictionary = {
     description:
       "DevFlow AI es un tablero de tareas para equipos de desarrollo. Cada tarjeta muestra el estado real de su pull request en GitHub, así nadie tiene que cambiar de herramienta para saber qué está en revisión o ya se mergeó.",
     prStatesTitle: "Estados del pull request",
+    viewDemo: "Ver demo",
+    demoHint: "La demo no pide cuenta: es el tablero real con el que se construyó este proyecto.",
+  },
+  demo: {
+    badge: "Demo",
+    note: "Es el tablero con el que se construyó DevFlow AI. Puedes moverlo todo: los cambios se borran al recargar y nada se envía a GitHub.",
+    title: "Así se construye DevFlow AI",
+    owner: "demo",
+    useGitHub: "Usar con mi GitHub",
+    homeLabel: "DevFlow AI, ir al inicio",
+    linkNotice: "En la demo no se consulta GitHub, así que no puedes vincular PRs. Entra con tu cuenta para conectar los tuyos.",
   },
   auth: {
     signIn: "Continuar con GitHub",

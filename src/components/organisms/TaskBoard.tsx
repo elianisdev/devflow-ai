@@ -93,6 +93,7 @@ type TaskBoardProps = {
   labels: TaskBoardLabels;
   locale: string;
   todoEmptyAction: ReactNode;
+  pullRequestLinkNotice?: ReactNode;
   updateTaskAction: (taskId: string, currentStatus: TaskStatus, state: TaskFormState, formData: FormData) => Promise<TaskFormState>;
   deleteTaskAction: (taskId: string) => Promise<void>;
   moveTaskAction: (taskId: string, status: TaskStatus, index: number) => Promise<void>;
@@ -119,7 +120,7 @@ function ColumnDropZone({ status, label, children }: { status: TaskStatus; label
 
 type SortableTaskProps = Pick<
   TaskBoardProps,
-  "labels" | "locale" | "updateTaskAction" | "deleteTaskAction" | "linkPullRequestAction" | "unlinkPullRequestAction"
+  "labels" | "locale" | "pullRequestLinkNotice" | "updateTaskAction" | "deleteTaskAction" | "linkPullRequestAction" | "unlinkPullRequestAction"
 > & {
   task: BoardTask;
   status: TaskStatus;
@@ -134,6 +135,7 @@ function SortableTask({
   status,
   labels,
   locale,
+  pullRequestLinkNotice,
   shouldIgnoreClick,
   updateTaskAction,
   deleteTaskAction,
@@ -168,6 +170,7 @@ function SortableTask({
             locale={locale}
             linkAction={linkPullRequestAction.bind(null, task.id)}
             unlinkAction={unlinkPullRequestAction.bind(null, task.id)}
+            linkNotice={pullRequestLinkNotice}
           />
         }
         detailTitle={labels.detailTitle}
@@ -206,6 +209,7 @@ export function TaskBoard({
   labels,
   locale,
   todoEmptyAction,
+  pullRequestLinkNotice,
   updateTaskAction,
   deleteTaskAction,
   moveTaskAction,
@@ -433,6 +437,7 @@ export function TaskBoard({
                         status={status}
                         labels={labels}
                         locale={locale}
+                        pullRequestLinkNotice={pullRequestLinkNotice}
                         shouldIgnoreClick={shouldIgnoreClick}
                         updateTaskAction={updateTaskAction}
                         deleteTaskAction={deleteTaskAction}

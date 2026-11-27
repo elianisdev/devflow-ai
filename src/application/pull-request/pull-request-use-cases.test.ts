@@ -5,7 +5,7 @@ import { refreshPullRequests, staleAfterMilliseconds } from "@/application/pull-
 import { unlinkPullRequest } from "@/application/pull-request/unlink-pull-request";
 import { TaskNotFoundError } from "@/domain/board/task-not-found-error";
 import type { PullRequest } from "@/domain/pull-request/pull-request";
-import { createInMemoryBoardDependencies } from "@/test/in-memory-board-repositories";
+import { createInMemoryBoardDependencies } from "@/infrastructure/memory/in-memory-board-repositories";
 import { createInMemoryPullRequestDependencies } from "@/test/in-memory-pull-request-dependencies";
 
 const owner = { id: "user-1", login: "elianisdev" };

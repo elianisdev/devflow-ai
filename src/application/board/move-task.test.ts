@@ -2,7 +2,7 @@ import { createTask } from "@/application/board/create-task";
 import { moveTask } from "@/application/board/move-task";
 import { InvalidTaskMoveError } from "@/domain/board/invalid-task-move-error";
 import { TaskNotFoundError } from "@/domain/board/task-not-found-error";
-import { createInMemoryBoardDependencies } from "@/test/in-memory-board-repositories";
+import { createInMemoryBoardDependencies } from "@/infrastructure/memory/in-memory-board-repositories";
 
 const owner = { id: "user-1", login: "elianisdev" };
 const stranger = { id: "user-2", login: "someone" };

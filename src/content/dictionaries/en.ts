@@ -15,6 +15,17 @@ export const en = {
     description:
       "DevFlow AI is a task board for development teams. Each card shows the real state of its GitHub pull request, so nobody has to switch tools to know what is in review or already merged.",
     prStatesTitle: "Pull request states",
+    viewDemo: "View demo",
+    demoHint: "The demo needs no account: it is the real board this project was built with.",
+  },
+  demo: {
+    badge: "Demo",
+    note: "This is the board DevFlow AI was built with. Move anything you like: changes are cleared on reload and nothing is sent to GitHub.",
+    title: "How DevFlow AI gets built",
+    owner: "demo",
+    useGitHub: "Use it with my GitHub",
+    homeLabel: "DevFlow AI, go to home",
+    linkNotice: "The demo does not call GitHub, so you cannot link pull requests here. Sign in to connect your own.",
   },
   auth: {
     signIn: "Continue with GitHub",
