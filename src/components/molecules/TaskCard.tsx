@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useId, useState } from "react";
+import { useCallback, useId, useState, type CSSProperties, type HTMLAttributes } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Dialog } from "@/components/atoms/Dialog";
 import { DeleteTaskDialog, type DeleteTaskLabels } from "@/components/molecules/DeleteTaskDialog";
-import { TaskForm, type TaskFormLabels } from "@/components/molecules/TaskForm";
+import { TaskCardFace } from "@/components/molecules/TaskCardFace";
+import { TaskForm, type TaskFormLabels, type TaskStatusField } from "@/components/molecules/TaskForm";
 import type { TaskFormAction } from "@/types/task-form";
 
 type TaskCardProps = {
@@ -18,6 +19,12 @@ type TaskCardProps = {
   deleteLabels: DeleteTaskLabels;
   updateAction: TaskFormAction;
   deleteAction: () => Promise<void>;
+  statusField: TaskStatusField;
+  cardRef?: (node: HTMLElement | null) => void;
+  dragProps?: HTMLAttributes<HTMLButtonElement>;
+  cardStyle?: CSSProperties;
+  placeholderClassName?: string;
+  shouldIgnoreClick?: () => boolean;
 };
 
 type OpenDialog = "none" | "detail" | "delete";
@@ -33,6 +40,12 @@ export function TaskCard({
   deleteLabels,
   updateAction,
   deleteAction,
+  statusField,
+  cardRef,
+  dragProps,
+  cardStyle,
+  placeholderClassName,
+  shouldIgnoreClick,
 }: TaskCardProps) {
   const [openDialog, setOpenDialog] = useState<OpenDialog>("none");
   const [formKey, setFormKey] = useState(0);
@@ -42,18 +55,27 @@ export function TaskCard({
     setFormKey((key) => key + 1);
     setOpenDialog("detail");
   };
+  const handleCardClick = () => {
+    if (shouldIgnoreClick?.()) return;
+    openDetail();
+  };
   const close = useCallback(() => setOpenDialog("none"), []);
 
   return (
     <>
       <button
+        ref={cardRef}
         type="button"
-        onClick={openDetail}
-        className="flex w-full flex-col gap-2 rounded-md border border-neutral-200 bg-neutral-0 p-3.5 text-left transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700 motion-reduce:transition-none"
+        style={cardStyle}
+        {...dragProps}
+        onClick={handleCardClick}
+        className={
+          placeholderClassName
+            ? `flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-3.5 text-left [&>*]:invisible ${placeholderClassName}`
+            : "flex w-full touch-manipulation flex-col gap-2 rounded-md border border-neutral-200 bg-neutral-0 p-3.5 text-left transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700 motion-reduce:transition-none"
+        }
       >
-        <span className="text-body-sm font-semibold">{title}</span>
-        {description && <span className="line-clamp-2 text-caption text-neutral-600">{description}</span>}
-        <span className="font-mono text-data text-neutral-600">{noPullRequestLabel}</span>
+        <TaskCardFace title={title} description={description} noPullRequestLabel={noPullRequestLabel} />
       </button>
       <Dialog open={openDialog === "detail"} onClose={close} labelledBy={titleId} className="max-w-lg">
         <div className="flex flex-col gap-5">
@@ -79,6 +101,7 @@ export function TaskCard({
               defaultDescription={description ?? ""}
               onCancel={close}
               onSuccess={close}
+              statusField={statusField}
               secondaryAction={
                 <Button variant="dangerGhost" onClick={() => setOpenDialog("delete")}>
                   {deleteLabels.open}

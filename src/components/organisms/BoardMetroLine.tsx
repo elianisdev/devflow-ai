@@ -6,9 +6,9 @@ type BoardMetroLineProps = {
 };
 
 const segmentClassNames = [
-  "left-6 bg-neutral-600",
-  "left-[calc(1.5rem+(100%-3rem)/4)] bg-cyan-700",
-  "left-[calc(1.5rem+(100%-3rem)/2)] bg-open-700",
+  "left-6 bg-neutral-700",
+  "left-[calc(1.5rem+(100%-3rem)/4)] bg-blue-700",
+  "left-[calc(1.5rem+(100%-3rem)/2)] bg-warning-700",
 ];
 
 export function BoardMetroLine({ isEmpty, children }: BoardMetroLineProps) {

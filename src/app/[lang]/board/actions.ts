@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { BoardOwner, RawTaskInput } from "@/application/board/board-dependencies";
+import type { TaskStatus } from "@/domain/board/task";
 import { boardUseCases } from "@/infrastructure/board-use-cases";
 import { getCurrentSession } from "@/lib/session";
 import type { TaskFormState } from "@/types/task-form";
@@ -28,13 +29,24 @@ export async function createTaskAction(_state: TaskFormState, formData: FormData
 
 export async function updateTaskAction(
   taskId: string,
+  currentStatus: TaskStatus,
   _state: TaskFormState,
   formData: FormData,
 ): Promise<TaskFormState> {
-  const result = await boardUseCases.updateTask(await getOwner(), taskId, readTaskInput(formData));
+  const owner = await getOwner();
+  const result = await boardUseCases.updateTask(owner, taskId, readTaskInput(formData));
   if (!result.success) return { errors: result.errors };
+
+  const status = formData.get("status");
+  if (status && status !== currentStatus) await boardUseCases.moveTask(owner, taskId, { status });
+
   refreshBoard();
   return { success: true };
+}
+
+export async function moveTaskAction(taskId: string, status: TaskStatus, index: number): Promise<void> {
+  await boardUseCases.moveTask(await getOwner(), taskId, { status, index });
+  refreshBoard();
 }
 
 export async function deleteTaskAction(taskId: string): Promise<void> {
