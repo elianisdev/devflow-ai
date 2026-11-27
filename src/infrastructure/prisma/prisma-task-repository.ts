@@ -1,5 +1,7 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import type { TaskRepository } from "@/domain/board/board-repositories";
+import type { TaskStatus } from "@/domain/board/task";
+import { placeInOrder } from "@/domain/board/task-move";
 
 const taskFields = {
   id: true,
@@ -11,6 +13,16 @@ const taskFields = {
   createdAt: true,
   updatedAt: true,
 } as const;
+
+type TransactionClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
+
+const listColumnIds = async (tx: TransactionClient, boardId: string, status: TaskStatus) => {
+  const tasks = await tx.task.findMany({ where: { boardId, status }, orderBy: { position: "asc" }, select: { id: true } });
+  return tasks.map(({ id }) => id);
+};
+
+const saveColumnOrder = (tx: TransactionClient, orderedIds: string[], status: TaskStatus) =>
+  Promise.all(orderedIds.map((id, position) => tx.task.update({ where: { id }, data: { status, position } })));
 
 export const createPrismaTaskRepository = (client: PrismaClient): TaskRepository => ({
   listByBoard: (boardId) =>
@@ -37,4 +49,22 @@ export const createPrismaTaskRepository = (client: PrismaClient): TaskRepository
     const { count } = await client.task.deleteMany({ where: { id: taskId, board: { userId } } });
     return count > 0;
   },
+
+  moveOwnedBy: (userId, taskId, { status, index }) =>
+    client.$transaction(async (tx) => {
+      const task = await tx.task.findFirst({
+        where: { id: taskId, board: { userId } },
+        select: { boardId: true, status: true },
+      });
+      if (!task) return false;
+
+      const targetIds = await listColumnIds(tx, task.boardId, status);
+      await saveColumnOrder(tx, placeInOrder(targetIds, taskId, index), status);
+
+      if (task.status !== status) {
+        const sourceIds = await listColumnIds(tx, task.boardId, task.status);
+        await saveColumnOrder(tx, sourceIds, task.status);
+      }
+      return true;
+    }),
 });
