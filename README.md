@@ -63,7 +63,8 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [x] Sign in with GitHub
 - [x] Kanban board with fixed columns and task CRUD
 - [x] Keyboard-accessible drag and drop
-- [ ] Link tasks to pull requests by URL
+- [x] Link tasks to pull requests by URL
+- [x] Suggest the next column when the pull request changes state
 - [x] Continuous deployment
 
 ### v0.2 · Code reviewer agent
