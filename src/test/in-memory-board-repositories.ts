@@ -1,16 +1,29 @@
 import type { BoardDependencies } from "@/application/board/board-dependencies";
 import type { Board, Task } from "@/domain/board/task";
 import { placeInOrder } from "@/domain/board/task-move";
+import type { LinkedPullRequest } from "@/domain/pull-request/pull-request";
 
-export const createInMemoryBoardDependencies = (): BoardDependencies & { boardList: Board[]; taskList: Task[] } => {
+export type StoredLink = LinkedPullRequest & { taskId: string };
+
+export type InMemoryBoardDependencies = BoardDependencies & {
+  boardList: Board[];
+  taskList: Task[];
+  linkList: StoredLink[];
+  isOwnedBy: (userId: string, task: Task) => boolean;
+};
+
+export const createInMemoryBoardDependencies = (): InMemoryBoardDependencies => {
   const boardList: Board[] = [];
   const taskList: Task[] = [];
+  const linkList: StoredLink[] = [];
   const isOwnedBy = (userId: string, task: Task) =>
     boardList.some((board) => board.id === task.boardId && board.userId === userId);
 
   return {
     boardList,
     taskList,
+    linkList,
+    isOwnedBy,
     boards: {
       findOrCreateForUser: async (userId, name) => {
         const existing = boardList.find((board) => board.userId === userId);
@@ -21,7 +34,15 @@ export const createInMemoryBoardDependencies = (): BoardDependencies & { boardLi
       },
     },
     tasks: {
-      listByBoard: async (boardId) => taskList.filter((task) => task.boardId === boardId),
+      listByBoard: async (boardId) =>
+        taskList
+          .filter((task) => task.boardId === boardId)
+          .map((task) => {
+            const link = linkList.find((item) => item.taskId === task.id);
+            if (!link) return { ...task, pullRequest: null };
+            const { owner, repo, number, url, title, state, syncedAt } = link;
+            return { ...task, pullRequest: { owner, repo, number, url, title, state, syncedAt } };
+          }),
       nextPosition: async (boardId, status) =>
         taskList.filter((task) => task.boardId === boardId && task.status === status).length,
       create: async (input) => {
