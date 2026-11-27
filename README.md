@@ -65,6 +65,7 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [x] Keyboard-accessible drag and drop
 - [x] Link tasks to pull requests by URL
 - [x] Suggest the next column when the pull request changes state
+- [x] Demo board without sign-in, built from this project's own pull requests
 - [x] Continuous deployment
 
 ### v0.2 · Code reviewer agent
