@@ -59,9 +59,10 @@ The full scope of v0.1, with user stories and acceptance criteria, is in the [re
 - [x] Next.js project setup with TypeScript and Tailwind CSS
 - [x] Bilingual interface (English and Spanish)
 - [x] Database schema with Prisma and local PostgreSQL in Docker
-- [ ] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
+- [x] CI with GitHub Actions: lint, typecheck, tests and build on every pull request
 - [x] Sign in with GitHub
-- [ ] Kanban board with keyboard-accessible drag and drop
+- [x] Kanban board with fixed columns and task CRUD
+- [ ] Keyboard-accessible drag and drop
 - [ ] Link tasks to pull requests by URL
 - [x] Continuous deployment
 
@@ -97,6 +98,7 @@ Sign-in needs a [GitHub OAuth App](https://github.com/settings/applications/new)
 | `npm run db:down` | Stops the container; data stays in the volume |
 | `npm run db:migrate` | Applies migrations and generates the Prisma client |
 | `npm run db:studio` | Opens Prisma Studio to browse the data |
+| `npm test` | Runs the unit tests with Jest |
 
 ## Workflow
 

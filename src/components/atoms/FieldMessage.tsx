@@ -7,7 +7,7 @@ type FieldMessageProps = {
 export function FieldMessage({ id, hint, error }: FieldMessageProps) {
   if (error) {
     return (
-      <p id={id} className="text-caption text-closed-700">
+      <p id={id} role="alert" className="text-caption text-closed-700">
         {error}
       </p>
     );
