@@ -1,5 +1,6 @@
 import type { BoardDependencies } from "@/application/board/board-dependencies";
 import type { Board, Task } from "@/domain/board/task";
+import { placeInOrder } from "@/domain/board/task-move";
 
 export const createInMemoryBoardDependencies = (): BoardDependencies & { boardList: Board[]; taskList: Task[] } => {
   const boardList: Board[] = [];
@@ -39,6 +40,25 @@ export const createInMemoryBoardDependencies = (): BoardDependencies & { boardLi
         const index = taskList.findIndex((item) => item.id === taskId && isOwnedBy(userId, item));
         if (index === -1) return false;
         taskList.splice(index, 1);
+        return true;
+      },
+      moveOwnedBy: async (userId, taskId, { status, index }) => {
+        const task = taskList.find((item) => item.id === taskId);
+        if (!task || !isOwnedBy(userId, task)) return false;
+
+        const columnIds = (columnStatus: Task["status"]) =>
+          taskList
+            .filter((item) => item.boardId === task.boardId && item.status === columnStatus)
+            .sort((first, second) => first.position - second.position)
+            .map((item) => item.id);
+        const renumber = (orderedIds: string[], columnStatus: Task["status"]) =>
+          orderedIds.forEach((id, position) => {
+            Object.assign(taskList.find((item) => item.id === id) as Task, { status: columnStatus, position });
+          });
+
+        const sourceStatus = task.status;
+        renumber(placeInOrder(columnIds(status), taskId, index), status);
+        if (sourceStatus !== status) renumber(columnIds(sourceStatus), sourceStatus);
         return true;
       },
     },
