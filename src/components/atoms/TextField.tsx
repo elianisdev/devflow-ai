@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 import { FieldMessage } from "./FieldMessage";
 import {
   fieldControlClassName,
@@ -12,16 +12,20 @@ type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   hint?: string;
   error?: string;
+  labelAside?: ReactNode;
 };
 
-export function TextField({ id, label, hint, error, type = "text", ...props }: TextFieldProps) {
+export function TextField({ id, label, hint, error, labelAside, type = "text", ...props }: TextFieldProps) {
   const messageId = getFieldMessageId(id, hint, error);
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className={fieldLabelClassName}>
-        {label}
-      </label>
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={id} className={fieldLabelClassName}>
+          {label}
+        </label>
+        {labelAside}
+      </div>
       <input
         id={id}
         type={type}
